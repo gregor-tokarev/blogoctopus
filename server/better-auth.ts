@@ -9,7 +9,6 @@ export const auth = betterAuth({
     provider: "pg",
     schema: {
       ...schema,
-      user: schema.users,
     },
   }),
   secret: process.env.BETTER_ATUH_SECRET,
