@@ -14,6 +14,6 @@ async function signIn(): Promise<void> {
 <template>
   <div>
     <h1 class="text-9xl">title</h1>
-    <button @click="signIn">google</button>
+    <UiButton @click="signIn">google</UiButton>
   </div>
 </template>

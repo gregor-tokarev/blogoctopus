@@ -13,7 +13,13 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/image",
     "@nuxt/scripts",
+    "shadcn-nuxt",
   ],
+
+  shadcn: {
+    prefix: 'ui',
+    componentDir: './components/ui'
+  },
 
   vite: {
     plugins: [tailwindcss()],
