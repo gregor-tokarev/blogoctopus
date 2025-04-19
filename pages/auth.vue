@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import {authClient} from "~/lib/auth-client";
-import {Input} from "~/components/ui/input";
-import {Button} from "~/components/ui/button";
-import {Label} from "reka-ui";
-import {Separator} from "~/components/ui/separator";
-import {Loader2} from "lucide-vue-next"
+import useVuelidate from '@vuelidate/core';
+import { email as emailValidator, required } from '@vuelidate/validators';
+import { Loader2 } from "lucide-vue-next";
+import { Label } from "reka-ui";
+import { reactive, ref } from 'vue';
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Separator } from "~/components/ui/separator";
+import { authClient } from "~/lib/auth-client";
 
 const sending = ref(false);
+const state = reactive({ email: '' });
+const emailSuccess = ref(false)
+const v$ = useVuelidate({ email: { required, email: emailValidator } }, state)
 
-async function signIn(provider: "google" | "vk"): Promise<void> {
+async function signIn(provider: "google"): Promise<void> {
   sending.value = true;
   try {
     const data = await authClient.signIn.social({
@@ -21,23 +27,18 @@ async function signIn(provider: "google" | "vk"): Promise<void> {
   }
 }
 
-const session = authClient.useSession()
-
-
-onMounted(() => {
-  console.log(session.value)
-})
-
-const emailSuccess = ref(false)
-const email = ref("")
-
 async function signInMagicLink(): Promise<void> {
+  if (emailSuccess.value) return
+
+  v$.value.$touch();
+  if (v$.value.$invalid) return
+
   sending.value = true;
 
   try {
     await authClient.signIn.magicLink({
-      email: email.value,
-      callback: "/dashboard"
+      email: state.email,
+      callbackURL: "/dashboard"
     })
 
     emailSuccess.value = true
@@ -55,22 +56,25 @@ async function signInMagicLink(): Promise<void> {
 
     <div class="space-y-1.5 mt-7">
       <Button :disabled="sending" variant="outline" class="w-full" @click="signIn('google')">
-        <img alt="google icon" src="assets/images/google-icon.svg" >
+        <img alt="google icon" src="~/assets/images/google-icon.svg" />
         Google
       </Button>
-      <Button :disabled="sending" variant="outline" class="w-full" @click="signIn('vk')">Vk</Button>
     </div>
     <Separator label="some" class="my-7"/>
     <div class="">
       <Label class="text-neutral-500">E-mail</Label>
-      <Input :disabled="sending || emailSuccess" type="email" placeholder="ivan.ivanov@mail.ru" v-model="email"
-             @keydown.enter.exact="signInMagicLink"></Input>
-      <Button :disabled="sending" class="mt-5 w-full" @click="signInMagicLink">
+      <Input :disabled="sending || emailSuccess" type="email" placeholder="ivan.ivanov@mail.ru" v-model="state.email"
+             @keydown.enter.exact="signInMagicLink" @blur="v$.email.$touch()"></Input>
+      <p :style="{ opacity: v$.email.$error ? 1 : 0 }" class="text-red-500 text-sm transition-opacity duration-300 block h-6">
+        <span v-show="v$.email.required.$invalid">Email обязателен</span>
+        <span v-show="v$.email.email.$invalid">Неверный email</span>
+      </p>
+      <Button :disabled="sending || emailSuccess" class="mt-3 w-full" :variant="emailSuccess ? 'success' : 'default'" @click="signInMagicLink">
         <Loader2 v-if="sending" class="animate-spin size-4"></Loader2>
-        Продолжить
+        {{ emailSuccess ? "Откройте email" : "Продолжить" }}
       </Button>
     </div>
-    <p class="text-xs text-neutral-400 mt-5">Продолжая вы соглашаетесь с нашими <a class="underline" href="">Правилами
+    <p class="text-xs text-neutral-400 mt-3">Продолжая вы соглашаетесь с нашими <a class="underline" href="">Правилами
       пользования</a> и <a class="underline" href="">Политикой конфиденциальности</a></p>
   </div>
 </template>
