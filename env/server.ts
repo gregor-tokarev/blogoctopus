@@ -12,5 +12,8 @@ export const serverEnv = createEnv({
         GOOGLE_AUTH_SECRET: z.string().min(2),
 
         RESEND_API_KEY: z.string().min(2),
+
+        TELEGRAM_BOT_TOKEN: z.string().min(2),
+        APP_URL: z.string().min(2),
     }
 })

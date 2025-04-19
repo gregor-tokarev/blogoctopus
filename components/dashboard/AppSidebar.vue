@@ -6,7 +6,7 @@ import { authClient } from "~/lib/auth-client";
 const items = [
     {
         title: "Интеграции",
-        url: "#",
+        url: "/dashboard/integration",
         icon: Cable,
     },
     {
