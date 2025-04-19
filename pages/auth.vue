@@ -20,8 +20,6 @@ async function signIn(provider: "google"): Promise<void> {
     const data = await authClient.signIn.social({
       provider
     })
-
-    console.log(data)
   } finally {
     sending.value = false;
   }

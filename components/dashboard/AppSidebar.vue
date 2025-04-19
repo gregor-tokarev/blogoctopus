@@ -17,9 +17,6 @@ const items = [
 ];
 
 const session = authClient.useSession()
-watchEffect(() => {
-    console.log(session.value.data?.user)
-})
 
 const router = useRouter();
 
