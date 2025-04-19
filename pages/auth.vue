@@ -74,7 +74,7 @@ async function signInMagicLink(): Promise<void> {
         {{ emailSuccess ? "Откройте email" : "Продолжить" }}
       </Button>
     </div>
-    <p class="text-xs text-neutral-400 mt-3">Продолжая вы соглашаетесь с нашими <a class="underline" href="">Правилами
-      пользования</a> и <a class="underline" href="">Политикой конфиденциальности</a></p>
+    <p class="text-xs text-neutral-400 mt-3">Продолжая вы соглашаетесь с нашими <router-link class="underline" to="/terms">Правилами
+      пользования</router-link> и <router-link class="underline" to="/privacy">Политикой конфиденциальности</router-link></p>
   </div>
 </template>
