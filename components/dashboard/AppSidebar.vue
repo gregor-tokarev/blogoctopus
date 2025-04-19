@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { Cable, Clock, Plus } from "lucide-vue-next"
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuAction
-} from "@/components/ui/sidebar"
+import { Cable, Clock, Plus, LogOut, User2, ChevronUp } from "lucide-vue-next"
+import { authClient } from "~/lib/auth-client";
 
 // Menu items.
 const items = [
@@ -24,32 +15,66 @@ const items = [
         icon: Clock,
     },
 ];
+
+const session = authClient.useSession()
+watchEffect(() => {
+    console.log(session.value.data?.user)
+})
+
+const router = useRouter();
+
+function logout() {
+    authClient.signOut();
+    router.push("/auth");
+}
+
 </script>
 
 <template>
-    <Sidebar>
-        <SidebarContent>
-            <SidebarGroup>
-                <SidebarGroupContent>
-                    <SidebarMenu>
-                        <SidebarMenuItem v-for="item in items" :key="item.title">
-                            <SidebarMenuButton asChild>
+    <UiSidebar>
+        <UiSidebarContent>
+            <UiSidebarGroup>
+                <UiSidebarGroupContent>
+                    <UiSidebarMenu>
+                        <UiSidebarMenuItem v-for="item in items" :key="item.title">
+                            <UiSidebarMenuButton asChild>
                                 <a :href="item.url">
                                     <component :is="item.icon" />
                                     <span>{{ item.title }}</span>
                                 </a>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroupContent>
-            </SidebarGroup>
-            <SidebarGroup>
-                <SidebarGroupContent>
+                            </UiSidebarMenuButton>
+                        </UiSidebarMenuItem>
+                    </UiSidebarMenu>
+                </UiSidebarGroupContent>
+            </UiSidebarGroup>
+            <UiSidebarGroup>
+                <UiSidebarGroupContent>
                     <UiButton size="xs" variant="default" class="w-full">
                         <Plus />Новая публикация
                     </UiButton>
-                </SidebarGroupContent>
-            </SidebarGroup>
-        </SidebarContent>
-    </Sidebar>
+                </UiSidebarGroupContent>
+            </UiSidebarGroup>
+        </UiSidebarContent>
+        <UiSidebarFooter>
+            <UiSidebarMenu>
+                <UiSidebarMenuItem>
+                    <UiDropdownMenu>
+                        <UiDropdownMenuTrigger asChild>
+                            <UiSidebarMenuButton class="cursor-pointer">
+                                <User2 class="mr-2 size-4" /> 
+                                <span class="truncate">{{ session.data?.user?.email }}</span>
+                                <ChevronUp class="size-4 ml-auto" />
+                            </UiSidebarMenuButton>
+                        </UiDropdownMenuTrigger>
+                        <UiDropdownMenuContent side="top" class="w-56">
+                            <UiDropdownMenuItem @click="logout()">
+                                <LogOut class="mr-2 size-4" />
+                                Выйти
+                            </UiDropdownMenuItem>
+                        </UiDropdownMenuContent>
+                    </UiDropdownMenu>
+                </UiSidebarMenuItem>
+            </UiSidebarMenu>
+        </UiSidebarFooter>
+    </UiSidebar>
 </template>
