@@ -28,14 +28,16 @@ function verifyTelegramData(data: any): boolean {
 }
 
 export default defineEventHandler(async (event) => {
+  console.log("event: ", event);
   try {
     // Get the session to identify the user
     const session = await auth.api.getSession(toWebRequest(event));
+    console.log("session: ", session);
+
     if (!session?.user) {
       return sendRedirect(event, '/auth');
     }
 
-    console.log("session: ", session);
     
     // Get query parameters sent by Telegram
     const query = getQuery(event);
