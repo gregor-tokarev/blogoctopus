@@ -7,6 +7,7 @@ import crypto from "crypto";
 
 // Helper function to verify Telegram data
 function verifyTelegramData(data: any): boolean {
+  console.log("tg data: ", data);
   // Remove the hash from the data to check
   const { hash, ...checkData } = data;
   
@@ -33,6 +34,8 @@ export default defineEventHandler(async (event) => {
     if (!session?.user) {
       return sendRedirect(event, '/auth');
     }
+
+    console.log("session: ", session);
     
     // Get query parameters sent by Telegram
     const query = getQuery(event);
@@ -61,12 +64,14 @@ export default defineEventHandler(async (event) => {
     // Extract user data from Telegram
     const userId = session.user.id;
     const telegramData = {
-      id: query.id as string,
-      first_name: query.first_name as string,
-      username: query.username as string || null,
-      photo_url: query.photo_url as string || null,
-      auth_date: parseInt(query.auth_date as string) || Math.floor(Date.now() / 1000),
+      id: String(query.id),
+      first_name: String(query.first_name),
+      username: query.username ? String(query.username) : null,
+      photo_url: query.photo_url ? String(query.photo_url) : null,
+      auth_date: parseInt(query.auth_date as string) ?? Math.floor(Date.now() / 1000),
     };
+
+    console.log("telegramData: ", telegramData);
     
     // Check if there's an existing integration for this user
     const existingIntegration = await db
@@ -74,7 +79,7 @@ export default defineEventHandler(async (event) => {
       .from(telegramIntegrations)
       .where(eq(telegramIntegrations.userId, userId))
       .limit(1)
-      .then(results => results[0] || null);
+      .then(results => results[0] ?? null);
     
     // Save the integration data
     if (existingIntegration) {
@@ -83,7 +88,7 @@ export default defineEventHandler(async (event) => {
         .update(telegramIntegrations)
         .set({
           accessToken: JSON.stringify(telegramData),
-          botChatId: telegramData.id,
+          botChatId: String(telegramData.id),
           channelUsername: telegramData.username,
           authDate: new Date(telegramData.auth_date * 1000),
           updatedAt: new Date()
@@ -95,11 +100,9 @@ export default defineEventHandler(async (event) => {
         id: crypto.randomUUID(),
         userId,
         accessToken: JSON.stringify(telegramData),
-        botChatId: telegramData.id,
+        botChatId: String(telegramData.id),
         channelUsername: telegramData.username,
         authDate: new Date(telegramData.auth_date * 1000),
-        createdAt: new Date(),
-        updatedAt: new Date()
       });
     }
     
