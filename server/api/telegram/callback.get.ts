@@ -69,9 +69,12 @@ export default defineEventHandler(async (event) => {
     };
     
     // Check if there's an existing integration for this user
-    const existingIntegration = await db.query.telegramIntegrations.findFirst({
-      where: eq(telegramIntegrations.userId, userId)
-    });
+    const existingIntegration = await db
+      .select()
+      .from(telegramIntegrations)
+      .where(eq(telegramIntegrations.userId, userId))
+      .limit(1)
+      .then(results => results[0] || null);
     
     // Save the integration data
     if (existingIntegration) {
