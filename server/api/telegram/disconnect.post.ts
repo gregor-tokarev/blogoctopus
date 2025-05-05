@@ -1,5 +1,5 @@
-import { auth } from "~/server/better-auth";
-import { db } from "~/server/db";
+import { auth } from "~/server/lib/better-auth";
+import { db } from "~/server/lib/db";
 import { telegramIntegrations } from "~/server/schema";
 import { eq } from "drizzle-orm";
 
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     if (!session?.user) {
       throw createError({
         statusCode: 401,
-        message: "Unauthorized"
+        message: "Неавторизован"
       });
     }
     
@@ -24,13 +24,13 @@ export default defineEventHandler(async (event) => {
     
     return {
       success: true,
-      message: "Telegram integration successfully disconnected"
+      message: "Интеграция с Telegram успешно отключена"
     };
   } catch (error) {
     console.error('Error disconnecting Telegram:', error);
     throw createError({
       statusCode: 500,
-      message: "Failed to disconnect Telegram integration"
+      message: "Не удалось отключить интеграцию с Telegram"
     });
   }
 });

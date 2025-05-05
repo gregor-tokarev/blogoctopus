@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
-import * as schema from "./schema";
+import * as schema from "../schema";
 import {magicLink} from "better-auth/plugins";
-import {NOREPLY_EMAIL, resendClient} from "~/server/resend";
+import {NOREPLY_EMAIL, resendClient} from "~/server/lib/resend";
 import {serverEnv} from "~/env/server";
 
 export const auth = betterAuth({

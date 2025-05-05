@@ -1,5 +1,5 @@
-import { auth } from "~/server/better-auth";
-import { db } from "~/server/db";
+import { auth } from "~/server/lib/better-auth";
+import { db } from "~/server/lib/db";
 import { telegramIntegrations } from "~/server/schema";
 import { eq } from "drizzle-orm";
 

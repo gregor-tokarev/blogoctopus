@@ -1,104 +1,102 @@
 <script setup lang="ts">
-import { Send, Sparkles } from "lucide-vue-next";
 import { authClient } from "~/lib/auth-client";
-import { onMounted, ref } from "vue";
+import { useVuelidate } from '@vuelidate/core';
+import { required, helpers } from '@vuelidate/validators';
+import { LoaderCircle, Info, Sparkles, Send } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
 const session = authClient.useSession();
 const isConnected = ref(false);
 const isConnecting = ref(false);
 const error = ref("");
+const channelName = ref("");
+const showDialog = ref(false);
+
+// Initialize Vuelidate
+const v$ = useVuelidate({
+  channelName: {
+    required: helpers.withMessage('Имя канала обязательно', required),
+    validFormat: helpers.withMessage('Формат канала должен быть @channel_name', helpers.regex(/^@[a-zA-Z][a-zA-Z0-9_]{3,30}$/))
+  }
+}, { channelName });
 
 // Check if user has Telegram integration
-async function checkTelegramConnection() {
-  try {
-    const response = await fetch('/api/telegram/status');
-    const data = await response.json();
-    isConnected.value = data.isConnected;
-  } catch (err) {
-    console.error('Failed to check Telegram connection:', err);
-    error.value = "Не удалось проверить статус интеграции";
-  }
-}
+// async function checkTelegramConnection() {
+//   try {
+//     const response = await fetch('/api/telegram/status');
+//     const data = await response.json();
+//     isConnected.value = data.isConnected;
+//   } catch (err) {
+//     console.error('Failed to check Telegram connection:', err);
+//     error.value = "Не удалось проверить статус интеграции";
+//   }
+// }
 
 // Connect to Telegram
 async function connectTelegram() {
-  if (isConnecting.value) return;
-  
+  showDialog.value = true;
+  // Reset form state
+  channelName.value = "";
+  v$.value.$reset();
   error.value = "";
+}
+
+// Save Telegram channel connection
+async function saveTelegramChannel() {
+  error.value = "";
+  
+  // Validate form
+  const isFormValid = await v$.value.$validate();
+  if (!isFormValid) {
+    return;
+  }
+  
   isConnecting.value = true;
   
   try {
-    // Get auth URL from our API
-    const response = await fetch('/api/telegram/auth-url');
-    const { url } = await response.json();
-    
-    // Open Telegram auth in a popup
-    const width = 600;
-    const height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-    
-    const popup = window.open(
-      url,
-      'Telegram Auth',
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
-    
-    // Listen for messages from the popup
-    window.addEventListener('message', function onMessage(event) {
-      if (event.data === 'telegram-auth-success') {
-        window.removeEventListener('message', onMessage);
-        checkTelegramConnection();
-      }
+    await $fetch("/api/telegram/connect", {
+      method: "post", 
+      body: { channelName: channelName.value }
     });
-    
-    // Check if popup was closed
-    const checkInterval = setInterval(() => {
-      if (popup?.closed) {
-        clearInterval(checkInterval);
-        isConnecting.value = false;
-        checkTelegramConnection();
-      }
-    }, 500);
-  } catch (err) {
+
+    showDialog.value = false;
+  } catch (err: any) {
     console.error('Failed to connect Telegram:', err);
-    error.value = "Не удалось начать процесс авторизации";
+
+    toast.error(err.data.message, {})
   } finally {
     isConnecting.value = false;
   }
 }
 
 // Disconnect Telegram integration
-async function disconnectTelegram() {
-  error.value = "";
-  try {
-    await fetch('/api/telegram/disconnect', {
-      method: 'POST'
-    });
-    isConnected.value = false;
-  } catch (err) {
-    console.error('Failed to disconnect Telegram:', err);
-    error.value = "Не удалось отключить интеграцию";
-  }
-}
-
-onMounted(() => {
-  checkTelegramConnection();
-});
+// async function disconnectTelegram() {
+//   error.value = "";
+//   try {
+//     await fetch('/api/telegram/disconnect', {
+//       method: 'POST'
+//     });
+//     isConnected.value = false;
+//   } catch (err) {
+//     console.error('Failed to disconnect Telegram:', err);
+//     error.value = "Не удалось отключить интеграцию";
+//   }
+// }
 </script>
 
 <template>
   <div class="container py-6">
     <h1 class="text-2xl font-bold mb-6">Интеграции</h1>
     
+    <UiAlertDialog :open="showDialog">
     <!-- Telegram Integration Card -->
-    <div class="bg-card rounded-lg p-6 shadow-sm">
+    <UiAlertDialogTrigger class="bg-card rounded-lg p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
           <Send class="mr-3 size-5 text-blue-500" />
           <h2 class="text-xl font-semibold">Telegram</h2>
         </div>
-        <UiBadge v-if="isConnected" variant="success">Подключено</UiBadge>
+        <UiBadge v-if="isConnected" variant="default">Подключено</UiBadge>
         <UiBadge v-else variant="secondary">Не подключено</UiBadge>
       </div>
       
@@ -106,20 +104,81 @@ onMounted(() => {
         Подключите свой аккаунт Telegram для автоматической публикации в вашем канале.
       </p>
       
-      <div v-if="error" class="text-red-500 mb-4">{{ error }}</div>
-      
       <div v-if="isConnected">
-        <UiButton variant="destructive" @click="disconnectTelegram">
+        <!-- <UiButton variant="destructive" @click="disconnectTelegram">
           Отключить Telegram
-        </UiButton>
+        </UiButton> -->
       </div>
       <div v-else>
         <UiButton @click="connectTelegram" :disabled="isConnecting">
-          <Sparkles v-if="!isConnecting" class="mr-2 size-4" />
-          <UiSpinner v-else class="mr-2 size-4" aria-hidden="true" />
+          <Sparkles v-if="!isConnecting" class="mr-0.5 size-4" />
+          <LoaderCircle v-else class="mr-0.5 size-4 animate-spin" aria-hidden="true" />
           {{ isConnecting ? 'Подключение...' : 'Подключить Telegram' }}
         </UiButton>
       </div>
-    </div>
+    </UiAlertDialogTrigger>
+    
+    <!-- Telegram Connection Dialog -->
+        <UiAlertDialogContent>
+          <UiAlertDialogHeader>
+            <UiAlertDialogTitle>Подключение Telegram</UiAlertDialogTitle>
+            <UiAlertDialogDescription>
+              <div class="space-y-4 my-4">
+                <div class="flex items-start gap-2">
+                  <div class="bg-blue-100 rounded-full p-1 mt-1">
+                    <Info class="size-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p class="font-medium">Шаг 1:</p>
+                    <p>Добавьте бота <span class="font-mono bg-muted px-1.5 py-0.5 rounded">@blogoctopus_integration_bot</span> в канал, где вы хотите публиковать сообщения, и сделайте его администратором.</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-2">
+                  <div class="bg-blue-100 rounded-full p-1 mt-1">
+                    <Info class="size-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p class="font-medium">Шаг 2:</p>
+                    <p>Введите название вашего канала в поле ниже и нажмите "Сохранить".</p>
+                  </div>
+                </div>
+                
+                <form @submit.prevent="saveTelegramChannel" class="mt-6">
+                  <div class="mb-4">
+                    <label for="channel-name" class="block text-sm font-medium mb-1">Название канала</label>
+                    <UiInput 
+                      id="channel-name"
+                      v-model="channelName"
+                      placeholder="Например: @my_channel"
+                      :error="v$.channelName.$error"
+                      @blur="channelName.length > 0 && v$.channelName.$touch()"
+                    />
+                    
+                    <!-- Validation messages -->
+                    <div v-if="v$.channelName.$error" class="text-sm h-4 text-destructive mt-1">
+                      <span v-if="v$.channelName.required.$invalid">Имя канала обязательно</span>
+                      <span v-else-if="v$.channelName.validFormat.$invalid">Формат канала должен быть @channel_name</span>
+                    </div>
+                    
+                    <p v-else class="text-xs text-muted-foreground mt-1 h-4">Укажите имя канала, включая символ @</p>
+                  </div>
+                </form>
+              </div>
+            </UiAlertDialogDescription>
+          </UiAlertDialogHeader>
+          <UiAlertDialogFooter>
+            <UiAlertDialogCancel @click="showDialog = false">Отмена</UiAlertDialogCancel>
+            <UiAlertDialogAction 
+              @click="saveTelegramChannel" 
+              :disabled="isConnecting || v$.$error"
+              :class="{'opacity-50 cursor-not-allowed': v$.$invalid}"
+            >
+              <LoaderCircle v-if="isConnecting" class="mr-0.5 size-4 animate-spin" aria-hidden="true" />
+              {{ isConnecting ? 'Сохранение...' : 'Сохранить' }}
+            </UiAlertDialogAction>
+          </UiAlertDialogFooter>
+        </UiAlertDialogContent>
+      </UiAlertDialog>
   </div>
 </template>
