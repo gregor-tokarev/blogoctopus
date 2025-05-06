@@ -1,13 +1,11 @@
 <template>
-  <SidebarProvider>
-    <AppSidebar />
-    <main>
+  <UiSidebarProvider>
+    <DashboardAppSidebar />
+    <main class="max-w-[1180px] mx-auto pt-7">
       <NuxtPage />
     </main>
-  </SidebarProvider>
+  </UiSidebarProvider>
 </template>
 
 <script setup lang="ts">
-import { SidebarProvider } from "@/components/ui/sidebar"
-import AppSidebar from "@/components/dashboard/AppSidebar.vue"
 </script>
