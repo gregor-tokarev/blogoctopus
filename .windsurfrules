@@ -1,0 +1,17 @@
+<styling>
+- use tailwindcss for styling
+- use shadcn-vue for ui
+- do responsive design with mobile first approach 
+</styling>
+
+<backend>
+- use drizzle for database 
+- try not to use relations() function. Use .references() instead
+- use better-auth for authentication
+- use nuxt for server-side logic
+</backend>
+
+<design>
+- For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+- Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+</design>
