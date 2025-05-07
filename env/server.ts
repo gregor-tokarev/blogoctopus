@@ -15,5 +15,9 @@ export const serverEnv = createEnv({
 
         TELEGRAM_BOT_TOKEN: z.string().min(2),
         APP_URL: z.string().min(2),
+
+        LINKEDIN_CLIENT_ID: z.string().min(2),
+        LINKEDIN_CLIENT_SECRET: z.string().min(2),
+        LINKEDIN_REDIRECT_URI: z.string().url(),
     }
 })
