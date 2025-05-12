@@ -4,9 +4,14 @@
 - do responsive design with mobile first approach 
 </styling>
 
+<code>
+- use ?? where possible instead of ||
+</code>
+
 <backend>
 - use drizzle for database 
 - try not to use relations() function. Use .references() instead
+- use query builder for database queries
 - use better-auth for authentication
 - use nuxt for server-side logic
 </backend>

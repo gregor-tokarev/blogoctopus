@@ -66,7 +66,7 @@ async function connectTelegram() {
 </script>
 
 <template>
-        <UiAlertDialog :open="showDialog">
+  <UiAlertDialog :open="showDialog">
     <!-- Telegram Integration Card -->
     <UiAlertDialogTrigger class="bg-card rounded-lg p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
@@ -82,17 +82,21 @@ async function connectTelegram() {
         Подключите свой аккаунт Telegram для автоматической публикации в вашем канале.
       </p>
       
-      <div v-if="status?.isConnected">
-        <UiButton variant="destructive" @click="disconnectTelegram">
-          Отключить Telegram
-        </UiButton>
-      </div>
-      <div v-else>
-        <UiButton @click="showDialog = true">
-          <Sparkles class="mr-0.5 size-4" />
-          Подключить Telegram
-        </UiButton>
-      </div>
+      <UiButton
+        variant="destructive"
+        v-if="status?.isConnected"
+        @click="disconnectTelegram"
+      >
+        Отключить Telegram
+      </UiButton>
+      <UiButton
+        class="self-start mr-auto"
+        v-else
+        @click="showDialog = true"
+      >
+        <Sparkles class="mr-0.5 size-4" />
+        Подключить Telegram
+      </UiButton>
     </UiAlertDialogTrigger>
     
     <!-- Telegram Connection Dialog -->

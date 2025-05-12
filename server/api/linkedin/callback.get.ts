@@ -58,9 +58,10 @@ export default defineEventHandler(async (event) => {
         client_secret: serverEnv.LINKEDIN_CLIENT_SECRET,
       }),
     });
+    console.log(tokenResponse)
 
     // @ts-ignore TODO: Add type for tokenResponse
-    const { access_token, expires_in } = tokenResponse;
+    const { access_token, expires_in, refresh_token } = tokenResponse;
 
     if (!access_token) {
       throw new Error('Failed to retrieve access token from LinkedIn.');
@@ -78,6 +79,7 @@ export default defineEventHandler(async (event) => {
       id: crypto.randomUUID(),
       userId: session.user.id,
       accessToken: access_token, // IMPORTANT: Encrypt this token before storing in production!
+      refreshToken: refresh_token, // Store the refresh token if provided
       expiresAt: expiresAt,
       // linkedinProfileId: linkedinProfileId, // If fetched
       createdAt: new Date(),
@@ -86,6 +88,7 @@ export default defineEventHandler(async (event) => {
       target: linkedinIntegrations.userId, // Assuming one LinkedIn integration per user
       set: {
         accessToken: access_token,
+        refreshToken: refresh_token,
         expiresAt: expiresAt,
         // linkedinProfileId: linkedinProfileId, // If fetched
         updatedAt: new Date(),

@@ -11,10 +11,12 @@ export default defineEventHandler(async (event) => {
       connected: false,
     });
   }
-
-  const existingIntegration = await db.query.linkedinIntegrations.findFirst({
-    where: eq(linkedinIntegrations.userId, session.user.id),
-  });
+  const existingIntegration = await db
+    .select()
+    .from(linkedinIntegrations)
+    .where(eq(linkedinIntegrations.userId, session.user.id))
+    .limit(1)
+    .then((results) => results[0] || null);
 
   if (existingIntegration && existingIntegration.accessToken) {
     // Optionally, you could add a check here to see if the token is still valid

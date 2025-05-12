@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const scope = encodeURIComponent("r_liteprofile w_member_social"); 
+  const scope = encodeURIComponent("w_member_social"); 
   const state = crypto.randomUUID(); 
 
   // TODO: Store state in session or a temporary store to verify it in the callback for CSRF protection
