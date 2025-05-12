@@ -20,11 +20,11 @@ async function connectLinkedIn() {
       // Redirect to LinkedIn's authorization page
       window.location.href = response.authUrl;
     } else {
-      toast.error(response.message || "Failed to initiate LinkedIn connection.");
+      toast.error(response.message || "Не удалось инициировать подключение LinkedIn.");
     }
   } catch (error: any) {
     console.error('Error connecting to LinkedIn:', error);
-    toast.error(error.data?.message || "An error occurred while trying to connect LinkedIn.");
+    toast.error(error.data?.message || "Произошла ошибка при подключении LinkedIn.");
   } finally {
     // isProcessing will remain true as the page redirects.
     // If there's an error before redirect, it will be set to false.
@@ -39,11 +39,11 @@ async function disconnectLinkedIn() {
   isProcessing.value = true;
   try {
     const result: any = await $fetch("/api/linkedin/disconnect", { method: "post" });
-    toast.success(result.message || "LinkedIn disconnected successfully.");
+    toast.success(result.message || "LinkedIn успешно отключено.");
     await refreshStatus();
   } catch (error: any) {
     console.error('Error disconnecting LinkedIn:', error);
-    toast.error(error.data?.message || "Failed to disconnect LinkedIn.");
+    toast.error(error.data?.message || "Не удалось отключить LinkedIn.");
   } finally {
     isProcessing.value = false;
   }
@@ -52,7 +52,7 @@ async function disconnectLinkedIn() {
 // Check for callback query parameters on component mount
 onMounted(() => {
   if (route.query.linkedin_connected === 'true') {
-    toast.success("LinkedIn connected successfully!");
+    toast.success("LinkedIn успешно подключен!");
     // Clean the URL query parameters
     router.replace({ query: { ...route.query, linkedin_connected: undefined, linkedin_error: undefined } });
     refreshStatus();
