@@ -46,9 +46,11 @@ function logout() {
             </UiSidebarGroup>
             <UiSidebarGroup>
                 <UiSidebarGroupContent>
-                    <UiButton size="xs" variant="default" class="w-full">
-                        <Plus />Новая публикация
-                    </UiButton>
+                    <NuxtLink to="/dashboard/new-post" class="w-full">
+                        <UiButton size="xs" variant="default" class="w-full">
+                            <Plus />Новая публикация
+                        </UiButton>
+                    </NuxtLink>
                 </UiSidebarGroupContent>
             </UiSidebarGroup>
         </UiSidebarContent>
