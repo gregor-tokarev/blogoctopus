@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useVuelidate from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
-import { LoaderCircle, Info, Sparkles, Send } from "lucide-vue-next";
+import { LoaderCircle, Info, Unplug, Sparkles, Send } from "lucide-vue-next";
 import { toast } from 'vue-sonner';
 
 const isConnecting = ref(false);
@@ -68,7 +68,7 @@ async function connectTelegram() {
 <template>
   <UiAlertDialog :open="showDialog">
     <!-- Telegram Integration Card -->
-    <UiAlertDialogTrigger class="bg-card rounded-lg p-6 shadow-sm">
+    <UiAlertDialogTrigger class="bg-card rounded-lg p-6 border" as="div">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
           <Send class="mr-3 size-5 text-blue-500" />
@@ -78,7 +78,7 @@ async function connectTelegram() {
         <UiBadge v-else variant="secondary">Не подключено</UiBadge>
       </div>
       
-      <p class="text-muted-foreground mb-6">
+      <p class="text-muted-foreground mb-6 text-left">
         Подключите свой аккаунт Telegram для автоматической публикации в вашем канале.
       </p>
       
@@ -87,6 +87,7 @@ async function connectTelegram() {
         v-if="status?.isConnected"
         @click="disconnectTelegram"
       >
+        <Unplug class="mr-0.5 size-4" />
         Отключить Telegram
       </UiButton>
       <UiButton

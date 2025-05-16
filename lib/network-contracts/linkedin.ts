@@ -9,7 +9,7 @@ export const linkedinConnectResponseSchema = z.object({
 
 // Schema for the response when checking LinkedIn connection status
 export const linkedinStatusResponseSchema = z.object({
-  connected: z.boolean(),
+  isConnected: z.boolean(),
   profileId: z.string().optional(), // Optional: LinkedIn profile ID if connected
 });
 
