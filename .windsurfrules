@@ -6,12 +6,15 @@
 
 <code>
 - use ?? where possible instead of ||
+- write less comments
 </code>
 
 <backend>
 - use drizzle for database 
 - try not to use relations() function. Use .references() instead
 - use query builder for database queries
+- You can search for db schema in server/schema folder
+- check real schema content before writing any db related code
 - use better-auth for authentication
 - use nuxt for server-side logic
 </backend>

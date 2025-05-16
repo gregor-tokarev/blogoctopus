@@ -13,13 +13,13 @@ export default defineEventHandler(async (event) => {
 
   if (!serverEnv.LINKEDIN_CLIENT_ID || !serverEnv.LINKEDIN_REDIRECT_URI) {
     console.error("LinkedIn Client ID or Redirect URI not configured.");
-    throw createError({
+      throw createError({
       statusCode: 500,
       message: "LinkedIn integration not configured correctly on the server.",
     });
   }
 
-  const scope = encodeURIComponent("w_member_social"); 
+  const scope = encodeURIComponent("w_member_social openid profile"); 
   const state = crypto.randomUUID(); 
 
   // TODO: Store state in session or a temporary store to verify it in the callback for CSRF protection

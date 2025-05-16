@@ -59,6 +59,7 @@ export default defineEventHandler(async (event) => {
       }),
     });
 
+
     // @ts-ignore TODO: Add type for tokenResponse
     const { access_token, expires_in } = tokenResponse;
 
@@ -66,11 +67,26 @@ export default defineEventHandler(async (event) => {
       throw new Error('Failed to retrieve access token from LinkedIn.');
     }
 
-    // TODO: Optionally, fetch basic profile info using the access_token to get linkedinProfileId
-    // const profileResponse = await $fetch('https://api.linkedin.com/v2/me', {
-    //   headers: { 'Authorization': `Bearer ${access_token}` },
-    // });
-    // const linkedinProfileId = profileResponse.id;
+    // Try to fetch LinkedIn profile info - this may fail if we don't have the right permissions
+    let profileId = null;
+    try {
+      const profileResponse = await $fetch('https://api.linkedin.com/v2/userinfo', {
+        headers: { 
+          'Authorization': `Bearer ${access_token}`,
+          'X-Restli-Protocol-Version': '2.0.0', // LinkedIn API requires this
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // @ts-ignore TODO: Add type for profileResponse
+      profileId = profileResponse?.sub;
+    } catch (profileError) {
+      // If we can't fetch the profile, log the error but continue
+      // We can still store the token without a profile ID
+      console.error('Error fetching LinkedIn profile:', profileError);
+      // Fallback: Use LinkedIn member URN format if we know it follows a pattern
+      // profileId = `urn:li:person:${someIdentifier}`; // if we had some identifier
+    }
 
     const expiresAt = new Date(Date.now() + expires_in * 1000);
 
@@ -78,6 +94,7 @@ export default defineEventHandler(async (event) => {
       id: crypto.randomUUID(),
       userId: session.user.id,
       accessToken: access_token, // IMPORTANT: Encrypt this token before storing in production!
+      profileId: profileId, // Store the LinkedIn profile ID (could be null)
       expiresAt: expiresAt,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -85,9 +102,8 @@ export default defineEventHandler(async (event) => {
       target: linkedinIntegrations.userId, // Assuming one LinkedIn integration per user
       set: {
         accessToken: access_token,
-        refreshToken: refresh_token,
+        profileId: profileId, // Update the profile ID (could be null)
         expiresAt: expiresAt,
-        // linkedinProfileId: linkedinProfileId, // If fetched
         updatedAt: new Date(),
       }
     }).execute();
