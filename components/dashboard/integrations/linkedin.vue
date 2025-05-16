@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Linkedin, LoaderCircle, Sparkles, Unplug } from "lucide-vue-next";
 import { toast } from 'vue-sonner';
+import IntegrationCard from './IntegrationCard.vue';
 
 const isProcessing = ref(false); // Used for both connecting and disconnecting
 
@@ -45,24 +46,18 @@ async function disconnectLinkedIn() {
 </script>
 
 <template>
-  <div class="bg-card rounded-lg p-6 border">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center">
-        <Linkedin class="mr-3 size-6 text-[#0077B5]" />
-        <h2 class="text-xl font-semibold">LinkedIn</h2>
-      </div>
-      <UiBadge v-if="status?.isConnected" variant="default">Подключено</UiBadge>
-      <UiBadge v-else variant="secondary">Не подключено</UiBadge>
-    </div>
-
-    <p class="text-muted-foreground mb-6">
-      Подключите свой аккаунт LinkedIn для автоматической публикации профессиональных обновлений и статей.
-    </p>
+  <IntegrationCard
+    title="LinkedIn"
+    description="Подключите свой аккаунт LinkedIn для автоматической публикации профессиональных обновлений и статей."
+    :isConnected="status?.isConnected" 
+    :icon="Linkedin"
+    iconColor="text-[#0077B5]"
+  >
 
     <div v-if="status?.isConnected">
       <UiButton variant="destructive" @click="disconnectLinkedIn" :disabled="isProcessing">
         <LoaderCircle v-if="isProcessing" class="mr-2 size-4 animate-spin" />
-        <Unplug v-else class="mr-0.5 size-4" />
+        <Unplug v-else class="mr-2 size-4" />
         Отключить LinkedIn
       </UiButton>
     </div>
@@ -73,5 +68,5 @@ async function disconnectLinkedIn() {
         Подключить LinkedIn
       </UiButton>
     </div>
-  </div>
+  </IntegrationCard>
 </template>

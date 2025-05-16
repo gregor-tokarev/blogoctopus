@@ -3,6 +3,8 @@ import useVuelidate from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
 import { LoaderCircle, Info, Unplug, Sparkles, Send } from "lucide-vue-next";
 import { toast } from 'vue-sonner';
+import IntegrationCard from './IntegrationCard.vue';
+import { IconTelegram } from '#components';
 
 const isConnecting = ref(false);
 const error = ref("");
@@ -68,36 +70,31 @@ async function connectTelegram() {
 <template>
   <UiAlertDialog :open="showDialog">
     <!-- Telegram Integration Card -->
-    <UiAlertDialogTrigger class="bg-card rounded-lg p-6 border" as="div">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center">
-          <Send class="mr-3 size-5 text-blue-500" />
-          <h2 class="text-xl font-semibold">Telegram</h2>
-        </div>
-        <UiBadge v-if="status?.isConnected" variant="default">Подключено</UiBadge>
-        <UiBadge v-else variant="secondary">Не подключено</UiBadge>
-      </div>
-      
-      <p class="text-muted-foreground mb-6 text-left">
-        Подключите свой аккаунт Telegram для автоматической публикации в вашем канале.
-      </p>
-      
-      <UiButton
-        variant="destructive"
-        v-if="status?.isConnected"
-        @click="disconnectTelegram"
+    <UiAlertDialogTrigger as="div">
+      <IntegrationCard
+        title="Telegram"
+        description="Подключите свой аккаунт Telegram для автоматической публикации в вашем канале."
+        :isConnected="status?.isConnected"
+        :icon="IconTelegram"
+        iconColor="text-blue-500"
       >
-        <Unplug class="mr-0.5 size-4" />
-        Отключить Telegram
-      </UiButton>
-      <UiButton
-        class="self-start mr-auto"
-        v-else
-        @click="showDialog = true"
-      >
-        <Sparkles class="mr-0.5 size-4" />
-        Подключить Telegram
-      </UiButton>
+        <UiButton
+          variant="destructive"
+          v-if="status?.isConnected"
+          @click="disconnectTelegram"
+        >
+          <Unplug class="mr-0.5 size-4" />
+          Отключить Telegram
+        </UiButton>
+        <UiButton
+          class="self-start mr-auto"
+          v-else
+          @click="showDialog = true"
+        >
+          <Sparkles class="mr-2 size-4" />
+          Подключить Telegram
+        </UiButton>
+      </IntegrationCard>
     </UiAlertDialogTrigger>
     
     <!-- Telegram Connection Dialog -->
