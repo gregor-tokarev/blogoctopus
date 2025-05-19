@@ -49,3 +49,8 @@ export interface IntegrationService {
    */
   deletePost(userId: string, postId: string): Promise<PostResponse>;
 }
+
+// Export all integration services
+export { linkedinIntegrationService } from './linkedin';
+export { telegramIntegrationService } from './telegram';
+export { youtubeIntegrationService } from './youtube';
