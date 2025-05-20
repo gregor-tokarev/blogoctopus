@@ -1,5 +1,5 @@
 import { auth } from '~/server/lib/better-auth';
-import type { PostContent, PostResponse } from '~/server/lib/integrations';
+import { youtubeIntegrationService, type PostContent, type PostResponse } from '~/server/lib/integrations';
 import { linkedinIntegrationService } from '~/server/lib/integrations/linkedin';
 import { telegramIntegrationService } from '~/server/lib/integrations/telegram';
 
@@ -30,8 +30,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const results = await Promise.allSettled([
-      telegramIntegrationService.createPost(userId, content),
-      linkedinIntegrationService.createPost(userId, content)
+      // telegramIntegrationService.createPost(userId, content),
+      // linkedinIntegrationService.createPost(userId, content)
+      youtubeIntegrationService.createPost(userId, content)
     ]);
 
     const response: { telegram?: PostResponse, linkedin?: PostResponse, errors: any[] } = {
