@@ -19,11 +19,6 @@ export const serverEnv = createEnv({
         LINKEDIN_CLIENT_ID: z.string().min(2),
         LINKEDIN_CLIENT_SECRET: z.string().min(2),
         LINKEDIN_REDIRECT_URI: z.string().url(),
-        LINKEDIN_API_VERSION: z.string().optional().default('202402'), // Example version, check LinkedIn docs
-        
-        // YouTube API credentials
-        YOUTUBE_CLIENT_ID: z.string().min(2),
-        YOUTUBE_CLIENT_SECRET: z.string().min(2),
-        YOUTUBE_REDIRECT_URI: z.string().url()
+        LINKEDIN_API_VERSION: z.string().optional().default('202402') // Example version, check LinkedIn docs
     }
 })

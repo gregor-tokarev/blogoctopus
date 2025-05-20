@@ -24,6 +24,8 @@ export interface PostResponse {
 }
 
 export interface IntegrationService {
+  name: string;
+
   /**
    * Creates a new post on the integrated platform.
    * @param userId The ID of the user in your system, used to fetch credentials.
@@ -53,4 +55,3 @@ export interface IntegrationService {
 // Export all integration services
 export { linkedinIntegrationService } from './linkedin';
 export { telegramIntegrationService } from './telegram';
-export { youtubeIntegrationService } from './youtube';

@@ -1,5 +1,5 @@
 import { auth } from '~/server/lib/better-auth';
-import { youtubeIntegrationService, type PostContent, type PostResponse } from '~/server/lib/integrations';
+import { type PostContent, type PostResponse } from '~/server/lib/integrations';
 import { linkedinIntegrationService } from '~/server/lib/integrations/linkedin';
 import { telegramIntegrationService } from '~/server/lib/integrations/telegram';
 
@@ -29,19 +29,21 @@ export default defineEventHandler(async (event) => {
       return { success: false, error: 'Post content cannot be empty.' };
     }
 
-    const results = await Promise.allSettled([
-      // telegramIntegrationService.createPost(userId, content),
-      // linkedinIntegrationService.createPost(userId, content)
-      youtubeIntegrationService.createPost(userId, content)
-    ]);
+    const platforms = [
+      telegramIntegrationService,
+      linkedinIntegrationService
+    ];
 
-    const response: { telegram?: PostResponse, linkedin?: PostResponse, errors: any[] } = {
+    const results = await Promise.allSettled(platforms.map(platform => platform.createPost(userId, content)));
+
+    // @ts-expect-error
+    const response: { [platform: string]: PostResponse | undefined, errors: any[] } = {
       errors: []
     };
     let overallSuccess = true;
 
     results.forEach((result, index) => {
-      const platform = index === 0 ? 'telegram' : 'linkedin';
+      const platform = platforms[index].name;
       if (result.status === 'fulfilled') {
         response[platform] = result.value;
         if (!result.value.success) {
@@ -71,8 +73,6 @@ export default defineEventHandler(async (event) => {
     console.error('Error in send-all endpoint:', error);
     event.node.res.statusCode = 500;
     return {
-      telegram: { success: false, error: 'Failed due to an unexpected error.' },
-      linkedin: { success: false, error: 'Failed due to an unexpected error.' },
       errors: [{ platform: 'general', error: error.message || 'An unexpected server error occurred.' }]
     };
   }

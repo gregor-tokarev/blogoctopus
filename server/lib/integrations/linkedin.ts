@@ -23,6 +23,8 @@ async function getLinkedinCredentials(userId: string): Promise<{ accessToken: st
 }
 
 export class LinkedInIntegrationService implements IntegrationService {
+  name = 'linkedin';
+
   public async createPost(userId: string, content: PostContent): Promise<PostResponse> {
     const credentials = await getLinkedinCredentials(userId);
     if (!credentials || !credentials.profileId) {

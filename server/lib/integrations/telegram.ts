@@ -41,6 +41,8 @@ function escapeMarkdownV2(text: string): string {
 }
 
 export class TelegramIntegrationService implements IntegrationService {
+  name = 'telegram';
+
   public async createPost(
     userId: string,
     content: PostContent
