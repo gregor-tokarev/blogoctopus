@@ -21,6 +21,7 @@
     "@nuxt/scripts": "0.11.5",
     "@t3-oss/env-nuxt": "^0.12.0",
     "@tailwindcss/vite": "^4.1.4",
+    "@trigger.dev/sdk": "^3.3.17",
     "@unhead/vue": "^2.0.0-rc.8",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
+    "@trigger.dev/build": "^3.3.17",
     "@types/node-telegram-bot-api": "^0.64.8",
     "@types/pg": "^8.11.13",
     "@types/react": "^19.1.2",
