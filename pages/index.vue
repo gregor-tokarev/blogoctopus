@@ -8,8 +8,8 @@ const router = useRouter();
 onMounted(async () => {
   try {
     // Check if user is authenticated
-    const {data: session} = await authClient.getSession();
-    
+    const { data: session } = await authClient.getSession();
+
     if (session?.user) {
       // User is logged in, redirect to dashboard
       router.push("/dashboard");

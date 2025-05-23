@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Schema for the response when initiating YouTube connection (e.g., returning auth URL)
 export const youtubeConnectResponseSchema = z.object({

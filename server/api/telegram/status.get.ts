@@ -10,35 +10,37 @@ export default defineEventHandler(async (event) => {
     if (!session?.user) {
       throw createError({
         statusCode: 401,
-        message: "Unauthorized"
+        message: "Unauthorized",
       });
     }
-    
+
     // Get the user ID from the session
     const userId = session.user.id;
-    
+
     // Check if the user has a Telegram integration
     const integration = await db
       .select()
       .from(telegramIntegrations)
       .where(eq(telegramIntegrations.userId, userId))
       .limit(1)
-      .then(results => results[0] || null);
-    
+      .then((results) => results[0] || null);
+
     return {
       isConnected: !!integration,
-      integration: integration ? {
-        id: integration.id,
-        channelUsername: integration.channelUsername,
-        createdAt: integration.createdAt,
-        updatedAt: integration.updatedAt
-      } : null
+      integration: integration
+        ? {
+            id: integration.id,
+            channelUsername: integration.channelUsername,
+            createdAt: integration.createdAt,
+            updatedAt: integration.updatedAt,
+          }
+        : null,
     };
   } catch (error) {
-    console.error('Error checking Telegram status:', error);
+    console.error("Error checking Telegram status:", error);
     throw createError({
       statusCode: 500,
-      message: "Failed to check Telegram integration status"
+      message: "Failed to check Telegram integration status",
     });
   }
 });

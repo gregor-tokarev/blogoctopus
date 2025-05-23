@@ -10,9 +10,7 @@ export interface PostContent {
   images?: FileAttachment[];
   videos?: FileAttachment[];
   // LinkedIn specific might have documents, Telegram might have other types
-  otherFiles?: FileAttachment[]; 
-  title?: string; // e.g., for LinkedIn articles
-  channel?: string; // Target channel for the post
+  otherFiles?: FileAttachment[];
 }
 
 export interface PostResponse {
@@ -41,7 +39,11 @@ export interface IntegrationService {
    * @param content The new content for the post.
    * @returns A promise resolving to the post response.
    */
-  editPost(userId: string, postId: string, content: PostContent): Promise<PostResponse>;
+  editPost(
+    userId: string,
+    postId: string,
+    content: PostContent,
+  ): Promise<PostResponse>;
 
   /**
    * Deletes a post from the integrated platform.
@@ -53,5 +55,5 @@ export interface IntegrationService {
 }
 
 // Export all integration services
-export { linkedinIntegrationService } from './linkedin';
-export { telegramIntegrationService } from './telegram';
+export { linkedinIntegrationService } from "./linkedin";
+export { telegramIntegrationService } from "./telegram";

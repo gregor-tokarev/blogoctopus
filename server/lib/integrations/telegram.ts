@@ -16,7 +16,7 @@ import { eq } from "drizzle-orm";
 
 // Helper to get user-specific Telegram Chat ID from DB
 async function getTelegramChatIdForUser(
-  userId: string
+  userId: string,
 ): Promise<string | null> {
   if (!userId) return null;
   try {
@@ -41,11 +41,11 @@ function escapeMarkdownV2(text: string): string {
 }
 
 export class TelegramIntegrationService implements IntegrationService {
-  name = 'telegram';
+  name = "telegram";
 
   public async createPost(
     userId: string,
-    content: PostContent
+    content: PostContent,
   ): Promise<PostResponse> {
     const chatId = await getTelegramChatIdForUser(userId); // Returns string | null
 
@@ -111,7 +111,7 @@ export class TelegramIntegrationService implements IntegrationService {
             {
               filename: image.filename,
               contentType: image.mimeType,
-            }
+            },
           );
         } else {
           const mediaGroup: InputMedia[] = content.images.map(
@@ -120,7 +120,7 @@ export class TelegramIntegrationService implements IntegrationService {
               media: image.buffer,
               caption: index === 0 ? caption : undefined, // Caption only on the first item in media group
               parse_mode: index === 0 ? parseMode : undefined,
-            })
+            }),
           );
           const results = await telegramBot.sendMediaGroup(chatId, mediaGroup);
           messageResult = results[0]; // Use the first message for PostResponse
@@ -135,7 +135,7 @@ export class TelegramIntegrationService implements IntegrationService {
             {
               filename: video.filename,
               contentType: video.mimeType,
-            }
+            },
           );
         } else {
           const mediaGroup: InputMedia[] = content.videos.map(
@@ -144,7 +144,7 @@ export class TelegramIntegrationService implements IntegrationService {
               media: video.buffer,
               caption: index === 0 ? caption : undefined,
               parse_mode: index === 0 ? parseMode : undefined,
-            })
+            }),
           );
           const results = await telegramBot.sendMediaGroup(chatId, mediaGroup);
           messageResult = results[0];
@@ -159,7 +159,7 @@ export class TelegramIntegrationService implements IntegrationService {
             {
               filename: doc.filename,
               contentType: doc.mimeType,
-            }
+            },
           );
         } else {
           const mediaGroup: InputMedia[] = content.otherFiles.map(
@@ -168,7 +168,7 @@ export class TelegramIntegrationService implements IntegrationService {
               media: doc.buffer,
               caption: index === 0 ? caption : undefined,
               parse_mode: index === 0 ? parseMode : undefined,
-            })
+            }),
           );
           const results = await telegramBot.sendMediaGroup(chatId, mediaGroup);
           messageResult = results[0];
@@ -190,7 +190,7 @@ export class TelegramIntegrationService implements IntegrationService {
     } catch (e: any) {
       console.error(
         "Telegram post creation failed:",
-        e.message ?? e.response?.data?.description ?? e
+        e.message ?? e.response?.data?.description ?? e,
       );
       return {
         success: false,
@@ -206,7 +206,7 @@ export class TelegramIntegrationService implements IntegrationService {
   public async editPost(
     userId: string,
     postId: string,
-    content: PostContent
+    content: PostContent,
   ): Promise<PostResponse> {
     const chatId = await getTelegramChatIdForUser(userId); // Returns string | null
 
@@ -271,7 +271,7 @@ export class TelegramIntegrationService implements IntegrationService {
     } catch (e: any) {
       console.error(
         "Telegram post edit failed:",
-        e.message ?? e.response?.data?.description ?? e
+        e.message ?? e.response?.data?.description ?? e,
       );
       return {
         success: false,
@@ -286,7 +286,7 @@ export class TelegramIntegrationService implements IntegrationService {
 
   public async deletePost(
     userId: string,
-    postId: string
+    postId: string,
   ): Promise<PostResponse> {
     const chatId = await getTelegramChatIdForUser(userId);
     if (!chatId)
@@ -301,7 +301,7 @@ export class TelegramIntegrationService implements IntegrationService {
     } catch (e: any) {
       console.error(
         "Telegram post deletion failed:",
-        e.message ?? e.response?.data?.description ?? e
+        e.message ?? e.response?.data?.description ?? e,
       );
       return {
         success: false,

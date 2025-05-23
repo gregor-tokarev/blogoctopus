@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Schema for the response when initiating LinkedIn connection (e.g., returning auth URL)
 export const linkedinConnectResponseSchema = z.object({

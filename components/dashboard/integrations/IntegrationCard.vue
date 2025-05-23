@@ -2,58 +2,58 @@
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   isConnected: {
     type: Boolean,
-    default: false
+    default: false,
   },
   icon: {
     type: Object,
-    required: true
+    required: true,
   },
   iconColor: {
     type: String,
-    default: 'text-primary'
+    default: "text-primary",
   },
   connectLabel: {
     type: String,
-    default: 'Подключить'
+    default: "Подключить",
   },
   disconnectLabel: {
     type: String,
-    default: 'Отключить'
+    default: "Отключить",
   },
   connectIcon: {
     type: Object,
-    default: null
+    default: null,
   },
   disconnectIcon: {
     type: Object,
-    default: null
+    default: null,
   },
   connectBtnClass: {
     type: String,
-    default: 'self-start mr-auto'
+    default: "self-start mr-auto",
   },
   disconnectBtnClass: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
 });
 
-const emit = defineEmits(['connect', 'disconnect']);
+const emit = defineEmits(["connect", "disconnect"]);
 
 function onConnect() {
-  emit('connect');
+  emit("connect");
 }
 
 function onDisconnect() {
-  emit('disconnect');
+  emit("disconnect");
 }
 </script>
 
@@ -67,11 +67,11 @@ function onDisconnect() {
       <UiBadge v-if="isConnected" variant="default">Подключено</UiBadge>
       <UiBadge v-else variant="secondary">Не подключено</UiBadge>
     </div>
-    
+
     <p class="text-muted-foreground mb-6 text-left">
       {{ description }}
     </p>
-    
+
     <!-- Default button actions -->
     <slot>
       <UiButton
@@ -80,14 +80,14 @@ function onDisconnect() {
         @click="onDisconnect"
         :class="disconnectBtnClass"
       >
-        <component :is="disconnectIcon" v-if="disconnectIcon" class="mr-0.5 size-4" />
+        <component
+          :is="disconnectIcon"
+          v-if="disconnectIcon"
+          class="mr-0.5 size-4"
+        />
         {{ disconnectLabel }} {{ title }}
       </UiButton>
-      <UiButton
-        v-else
-        @click="onConnect"
-        :class="connectBtnClass"
-      >
+      <UiButton v-else @click="onConnect" :class="connectBtnClass">
         <component :is="connectIcon" v-if="connectIcon" class="mr-2 size-4" />
         {{ connectLabel }} {{ title }}
       </UiButton>

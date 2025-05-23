@@ -10,27 +10,27 @@ export default defineEventHandler(async (event) => {
     if (!session?.user) {
       throw createError({
         statusCode: 401,
-        message: "Неавторизован"
+        message: "Неавторизован",
       });
     }
-    
+
     // Get the user ID from the session
     const userId = session.user.id;
-    
+
     // Delete the Telegram integration for this user
     await db
       .delete(telegramIntegrations)
       .where(eq(telegramIntegrations.userId, userId));
-    
+
     return {
       success: true,
-      message: "Интеграция с Telegram успешно отключена"
+      message: "Интеграция с Telegram успешно отключена",
     };
   } catch (error) {
-    console.error('Error disconnecting Telegram:', error);
+    console.error("Error disconnecting Telegram:", error);
     throw createError({
       statusCode: 500,
-      message: "Не удалось отключить интеграцию с Telegram"
+      message: "Не удалось отключить интеграцию с Telegram",
     });
   }
 });

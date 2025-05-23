@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const result = await db.delete(linkedinIntegrations)
+    const result = await db
+      .delete(linkedinIntegrations)
       .where(eq(linkedinIntegrations.userId, session.user.id))
       .returning(); // Use returning() to see if a row was actually deleted
 
@@ -22,7 +23,8 @@ export default defineEventHandler(async (event) => {
       // No integration found to delete, could be considered a success or a specific status
       return linkedinDisconnectResponseSchema.parse({
         success: true, // Or false, depending on desired behavior if not found
-        message: "No LinkedIn integration found to disconnect or already disconnected.",
+        message:
+          "No LinkedIn integration found to disconnect or already disconnected.",
       });
     }
 

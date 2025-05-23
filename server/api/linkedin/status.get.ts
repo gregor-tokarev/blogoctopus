@@ -20,7 +20,12 @@ export default defineEventHandler(async (event) => {
     .limit(1)
     .then((results) => results[0] || null);
 
-  if (existingIntegration && existingIntegration.accessToken && existingIntegration.expiresAt && new Date() < new Date(existingIntegration.expiresAt)) {
+  if (
+    existingIntegration &&
+    existingIntegration.accessToken &&
+    existingIntegration.expiresAt &&
+    new Date() < new Date(existingIntegration.expiresAt)
+  ) {
     return linkedinStatusResponseSchema.parse({
       isConnected: true,
       profileId: existingIntegration.profileId ?? undefined,

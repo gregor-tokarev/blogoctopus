@@ -1,4 +1,4 @@
-import "./env/client"
+import "./env/client";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -18,8 +18,8 @@ export default defineNuxtConfig({
   ],
 
   shadcn: {
-    prefix: 'ui',
-    componentDir: './components/ui'
+    prefix: "ui",
+    componentDir: "./components/ui",
   },
 
   vite: {
