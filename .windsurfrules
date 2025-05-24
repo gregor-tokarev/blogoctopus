@@ -6,7 +6,7 @@
 
 <code>
 - use ?? where possible instead of ||
-- write less comments
+- DO NOT WRITE COMMENTS
 </code>
 
 <backend>

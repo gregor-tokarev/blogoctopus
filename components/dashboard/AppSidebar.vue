@@ -1,18 +1,23 @@
 <script setup lang="ts">
-import { Cable, Clock, Plus, LogOut, User2, ChevronUp } from "lucide-vue-next";
+import { Cable, Clock, Newspaper, LogOut, User2, ChevronUp } from "lucide-vue-next";
 import { authClient } from "~/lib/auth-client";
 
 // Menu items.
 const items = [
   {
-    title: "Интеграции",
-    url: "/dashboard/integration",
-    icon: Cable,
+    title: "Посты",
+    url: "/dashboard/posts",
+    icon: Newspaper,
   },
   {
     title: "Запланированные",
     url: "#",
     icon: Clock,
+  },
+  {
+    title: "Интеграции",
+    url: "/dashboard/integration",
+    icon: Cable,
   },
 ];
 
@@ -41,15 +46,6 @@ function logout() {
               </UiSidebarMenuButton>
             </UiSidebarMenuItem>
           </UiSidebarMenu>
-        </UiSidebarGroupContent>
-      </UiSidebarGroup>
-      <UiSidebarGroup>
-        <UiSidebarGroupContent>
-          <NuxtLink to="/dashboard/new-post" class="w-full">
-            <UiButton size="xs" variant="default" class="w-full">
-              <Plus />Новая публикация
-            </UiButton>
-          </NuxtLink>
         </UiSidebarGroupContent>
       </UiSidebarGroup>
     </UiSidebarContent>
