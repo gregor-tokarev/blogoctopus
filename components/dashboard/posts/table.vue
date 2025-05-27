@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { InferSelectModel } from "drizzle-orm";
-import { ref, computed } from "vue";
+import { ref, computed, h, watch } from "vue";
 import { posts } from "~/server/schema";
 import { FlexRender, createColumnHelper, getCoreRowModel, getPaginationRowModel, useVueTable, type ColumnDef } from "@tanstack/vue-table";
+import { Checkbox } from "~/components/ui/checkbox";
+import { formatHumanReadableDate } from "~/utils/date";
 
 type Post = InferSelectModel<typeof posts>;
 
@@ -13,7 +15,44 @@ const props = defineProps<{
   currentPage: number;
 }>();
 
+const selectedRows = useState<Record<string, boolean>>("selectedPostRows", () => ({}));
+
+const isAllSelected = computed(() => {
+  const rowIds = props.data.map(row => row.id);
+  return rowIds.length > 0 && rowIds.every(id => selectedRows.value[id]);
+});
+
+const toggleAll = (checked: boolean) => {
+  if (!checked) {
+    selectedRows.value = {};
+  } else {
+    const newSelected = { ...selectedRows.value };
+    props.data.forEach(row => {
+      newSelected[row.id] = true;
+    });
+    selectedRows.value = newSelected;
+  }
+};
+
+const getSelectedIds = () => {
+  return Object.entries(selectedRows.value)
+    .filter(([_, isSelected]) => isSelected)
+    .map(([id]) => id);
+};
+
+watch(selectedRows, () => {
+  emit("select-rows", getSelectedIds());
+}, { deep: true });
+
+const toggleRow = (id: string, checked: boolean) => {
+  selectedRows.value = {
+    ...selectedRows.value,
+    [id]: checked
+  };
+};
+
 const emit = defineEmits<{
+  (e: "select-rows", selectedIds: string[]): void;
   (e: "page-change", page: number): void;
 }>();
 
@@ -27,6 +66,29 @@ const columnHelper = createColumnHelper<Post>();
 
 // Columns configuration using ColumnDef type
 const columns: ColumnDef<Post, any>[] = [
+  columnHelper.display({
+    id: 'select',
+    header: () =>
+      h('div', { class: 'flex items-center justify-center' }, [
+        h(Checkbox, {
+          class: "cursor-pointer",
+          modelValue: isAllSelected.value,
+          'onUpdate:modelValue': (value: boolean | string) => toggleAll(value as boolean)
+        })
+      ]),
+    enableSorting: false,
+    enableHiding: false,
+    cell: info => {
+      const id = info.row.original.id;
+      return h('div', { class: 'flex items-center justify-center' }, [
+        h(Checkbox, {
+          class: "cursor-pointer",
+          modelValue: selectedRows.value[id] ?? false,
+          'onUpdate:modelValue': (value: boolean | string) => {toggleRow(id, value as boolean)}
+        })
+      ]);
+    },
+  }),
   columnHelper.accessor('content', {
     header: 'Контент',
     cell: info => {
@@ -40,16 +102,12 @@ const columns: ColumnDef<Post, any>[] = [
     cell: info => {
       const scheduledAt = info.getValue();
 
-      return scheduledAt ? new Date(scheduledAt.toString()).toLocaleString() : "Не запланировано";
+      return scheduledAt ? formatHumanReadableDate(scheduledAt) : "Не запланировано";
     },
   }),
   columnHelper.accessor('createdAt', {
     header: 'Создано',
-    cell: info => {
-      const createdAt = info.getValue();
-
-      return createdAt ? new Date(createdAt.toString()).toLocaleString() : "";
-    },
+    cell: info => formatHumanReadableDate(info.getValue()),
   }),
   columnHelper.display({
     id: 'integrations',

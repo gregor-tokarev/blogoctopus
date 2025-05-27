@@ -41,12 +41,12 @@ function handlePageChange(page: number) {
 </script>
 
 <template>
-  <div class="py-6 space-y-6">
+  <div class="py-6 space-y-6 min-w-[1180px]">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold tracking-tight">Посты</h1>
       <NuxtLink to="/dashboard/posts/new">
         <UiButton>
-          <Icon name="lucide:plus" class="h-4 w-4" />
+          <Icon name="lucide:plus" class="size-i4" />
           Новый пост
         </UiButton>
       </NuxtLink>
