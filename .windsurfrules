@@ -19,6 +19,14 @@
 - use nuxt for server-side logic
 </backend>
 
+<frontend>
+- use nuxt for client-side logic
+- for typization use server/schema folder and infers
+- use computed values instead of function calls in templates
+- use russian language for user displayable data 
+- use `useState` for states in pages
+</frontend>
+
 <design>
 - For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
 - Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.

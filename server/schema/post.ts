@@ -15,10 +15,8 @@ export const posts = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
     linkedinIntegrationId: text("linkedin_integration_id")
-      .notNull()
       .references(() => linkedinIntegrations.id),
     telegramIntegrationId: text("telegram_integration_id")
-      .notNull()
       .references(() => telegramIntegrations.id),
     scheduledAt: timestamp("scheduled_at"),
   },

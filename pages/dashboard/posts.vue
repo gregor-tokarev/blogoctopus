@@ -8,16 +8,24 @@ const pagination = reactive({
   totalPages: 0,
 });
 
-const { data, error, pending, refresh } = useFetch('/api/posts', {
-  query: () => ({
+const { data, status } = await useFetch('/api/posts', {
+  query: {
     page: pagination.page,
     limit: pagination.limit,
-  }),
+  },
   watch: [() => pagination.page, () => pagination.limit],
 });
 
-const posts = computed(() => data.value?.posts ?? []);
-const isLoading = computed(() => pending.value);
+const posts = computed(() => {
+  const rawPosts = data.value?.posts ?? [];
+  return rawPosts.map(post => ({
+    ...post,
+    createdAt: post.createdAt ? new Date(post.createdAt) : null,
+    updatedAt: post.updatedAt ? new Date(post.updatedAt) : null,
+    scheduledAt: post.scheduledAt ? new Date(post.scheduledAt) : null
+  }));
+});
+const isLoading = computed(() => status.value === 'pending');
 
 watchEffect(() => {
   if (data.value?.pagination) {
@@ -26,13 +34,25 @@ watchEffect(() => {
   }
 });
 
-function goToPage(page: number) {
+function handlePageChange(page: number) {
   if (page < 1 || page > pagination.totalPages) return;
   pagination.page = page;
 }
 </script>
 
 <template>
-  <div>
+  <div class="py-6 space-y-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl font-bold tracking-tight">Посты</h1>
+      <NuxtLink to="/dashboard/posts/new">
+        <UiButton>
+          <Icon name="lucide:plus" class="h-4 w-4" />
+          Новый пост
+        </UiButton>
+      </NuxtLink>
+    </div>
+
+    <DashboardPostsTable :data="posts" :is-loading="isLoading" :page-count="pagination.totalPages"
+      :current-page="pagination.page" @page-change="handlePageChange" />
   </div>
 </template>

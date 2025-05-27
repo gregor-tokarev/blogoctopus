@@ -5,7 +5,7 @@ import { and, desc, eq, sql, SQL } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
   const session = await auth.api.getSession(toWebRequest(event));
-  
+
   if (!session?.user?.id) {
     throw createError({
       statusCode: 401,
@@ -19,27 +19,33 @@ export default defineEventHandler(async (event) => {
   const offset = (page - 1) * limit;
   const searchTerm = query.search?.toString() ?? "";
 
-  let whereConditions: SQL<unknown> | undefined = eq(posts.userId, session.user.id);
-  
+  let whereConditions: SQL<unknown> | undefined = eq(
+    posts.userId,
+    session.user.id
+  );
+
   if (searchTerm) {
-    const tsQuery = sql`to_tsquery('russian', ${searchTerm.replace(/ /g, ':&')}) || to_tsquery('english', ${searchTerm.replace(/ /g, ':&')})`;
+    const tsQuery = sql`to_tsquery('russian', ${searchTerm.replace(/ /g, ":&")}) || to_tsquery('english', ${searchTerm.replace(/ /g, ":&")})`;
     whereConditions = and(
       whereConditions,
       sql`${posts.contentTsv}::tsvector @@ ${tsQuery}`
     );
   }
 
-  const userPosts = await db.select()
+  const userPosts = await db
+    .select()
     .from(posts)
     .where(whereConditions)
     .orderBy(desc(posts.createdAt))
     .limit(limit)
-    .offset(offset);
+    .offset(offset)
+    .execute();
 
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)` })
     .from(posts)
-    .where(whereConditions);
+    .where(whereConditions)
+    .execute();
 
   return {
     posts: userPosts,
@@ -49,9 +55,11 @@ export default defineEventHandler(async (event) => {
       limit,
       totalPages: Math.ceil(count / limit),
     },
-    search: searchTerm ? {
-      term: searchTerm,
-      resultsCount: userPosts.length,
-    } : null,
+    search: searchTerm
+      ? {
+          term: searchTerm,
+          resultsCount: userPosts.length,
+        }
+      : null,
   };
 });
