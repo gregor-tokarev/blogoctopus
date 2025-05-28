@@ -54,6 +54,9 @@ const toggleRow = (id: string, checked: boolean) => {
 const emit = defineEmits<{
   (e: "select-rows", selectedIds: string[]): void;
   (e: "page-change", page: number): void;
+  (e: "delete", selectedIds: string[]): void;
+  (e: "discard"): void;
+  (e: "reschedule", selectedIds: string[]): void;
 }>();
 
 const searchQuery = useState<string>("searchQuery", () => "");
@@ -134,11 +137,45 @@ const table = useVueTable({
 
 <template>
   <div class="w-full space-y-4">
-    <div class="flex items-center justify-between">
-      <UiInput placeholder="Фильтр постов..." class="max-w-sm" v-model="searchQuery" />
-    </div>
-
-    <div class="rounded-md border">
+    <div class="rounded-md border relative">      
+      <Transition 
+        enter-active-class="transition duration-200 ease-out" 
+        enter-from-class="transform -translate-y-2 opacity-0" 
+        enter-to-class="transform translate-y-0 opacity-100"
+        leave-active-class="transition duration-150 ease-in" 
+        leave-from-class="transform translate-y-0 opacity-100" 
+        leave-to-class="transform -translate-y-2 opacity-0"
+      >
+        <div 
+          v-if="getSelectedIds().length > 0" 
+          class="absolute left-0 right-0 top-0 z-10 flex items-center gap-2 h-10 px-4 bg-accent rounded-t-md border-b border-border"
+        >
+          <span class="text-xs font-medium">Выбрано: {{ getSelectedIds().length }}</span>
+          <div class="flex items-center gap-1 ml-auto">
+            <UiButton 
+              variant="outline" 
+              size="xs" 
+              @click="emit('delete', getSelectedIds())"
+            >
+              Удалить
+            </UiButton>
+            <UiButton 
+              variant="outline" 
+              size="xs" 
+              @click="emit('reschedule', getSelectedIds())"
+            >
+              Перепланировать
+            </UiButton>
+            <UiButton 
+              variant="ghost" 
+              size="xs" 
+              @click="toggleAll(false)"
+            >
+              Отменить выбор
+            </UiButton>
+          </div>
+        </div>
+      </Transition>
       <UiTable>
         <UiTableHeader>
           <UiTableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
