@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { InferSelectModel } from "drizzle-orm";
-import { ref, computed, h, watch } from "vue";
+import { computed, h, watch } from "vue";
 import { posts } from "~/server/schema";
 import { FlexRender, createColumnHelper, getCoreRowModel, getPaginationRowModel, useVueTable, type ColumnDef } from "@tanstack/vue-table";
 import { Checkbox } from "~/components/ui/checkbox";
 import { formatHumanReadableDate } from "~/utils/date";
+import PostActions from "./post-actions.vue";
 
 type Post = InferSelectModel<typeof posts>;
 
@@ -57,6 +58,7 @@ const emit = defineEmits<{
   (e: "delete", selectedIds: string[]): void;
   (e: "discard"): void;
   (e: "reschedule", selectedIds: string[]): void;
+  (e: "edit", postId: string): void;
 }>();
 
 const searchQuery = useState<string>("searchQuery", () => "");
@@ -87,7 +89,7 @@ const columns: ColumnDef<Post, any>[] = [
         h(Checkbox, {
           class: "cursor-pointer",
           modelValue: selectedRows.value[id] ?? false,
-          'onUpdate:modelValue': (value: boolean | string) => {toggleRow(id, value as boolean)}
+          'onUpdate:modelValue': (value: boolean | string) => { toggleRow(id, value as boolean) }
         })
       ]);
     },
@@ -125,6 +127,15 @@ const columns: ColumnDef<Post, any>[] = [
       return integrations.length ? integrations.join(", ") : "Нет";
     },
   }),
+  columnHelper.display({
+    id: 'actions',
+    cell: ({ row }) => h(PostActions, {
+      post: row.original,
+      onDelete: (id) => emit('delete', [id]),
+      onReschedule: (id) => emit('reschedule', [id]),
+      onEdit: (id) => emit('edit', id)
+    }),
+  }),
 ];
 
 const table = useVueTable({
@@ -137,40 +148,22 @@ const table = useVueTable({
 
 <template>
   <div class="w-full space-y-4">
-    <div class="rounded-md border relative">      
-      <Transition 
-        enter-active-class="transition duration-200 ease-out" 
-        enter-from-class="transform -translate-y-2 opacity-0" 
-        enter-to-class="transform translate-y-0 opacity-100"
-        leave-active-class="transition duration-150 ease-in" 
-        leave-from-class="transform translate-y-0 opacity-100" 
-        leave-to-class="transform -translate-y-2 opacity-0"
-      >
-        <div 
-          v-if="getSelectedIds().length > 0" 
-          class="absolute left-0 right-0 top-0 z-10 flex items-center gap-2 h-10 px-4 bg-accent rounded-t-md border-b border-border"
-        >
+    <div class="rounded-md border relative">
+      <Transition enter-active-class="transition duration-200 ease-out"
+        enter-from-class="transform -translate-y-2 opacity-0" enter-to-class="transform translate-y-0 opacity-100"
+        leave-active-class="transition duration-150 ease-in" leave-from-class="transform translate-y-0 opacity-100"
+        leave-to-class="transform -translate-y-2 opacity-0">
+        <div v-if="getSelectedIds().length > 0"
+          class="absolute left-0 right-0 top-0 z-10 flex items-center gap-2 h-10 px-4 bg-accent rounded-t-md border-b border-border">
           <span class="text-xs font-medium">Выбрано: {{ getSelectedIds().length }}</span>
           <div class="flex items-center gap-1 ml-auto">
-            <UiButton 
-              variant="outline" 
-              size="xs" 
-              @click="emit('delete', getSelectedIds())"
-            >
+            <UiButton variant="outline" size="xs" @click="emit('delete', getSelectedIds())">
               Удалить
             </UiButton>
-            <UiButton 
-              variant="outline" 
-              size="xs" 
-              @click="emit('reschedule', getSelectedIds())"
-            >
+            <UiButton variant="outline" size="xs" @click="emit('reschedule', getSelectedIds())">
               Перепланировать
             </UiButton>
-            <UiButton 
-              variant="ghost" 
-              size="xs" 
-              @click="toggleAll(false)"
-            >
+            <UiButton variant="ghost" size="xs" @click="toggleAll(false)">
               Отменить выбор
             </UiButton>
           </div>
@@ -209,12 +202,10 @@ const table = useVueTable({
       <div class="text-sm text-muted-foreground">
       </div>
       <div class="flex items-center space-x-2">
-        <UiButton variant="outline" size="sm" :disabled="table.getCanPreviousPage()"
-          @click="table.previousPage()">
+        <UiButton variant="outline" size="sm" :disabled="table.getCanPreviousPage()" @click="table.previousPage()">
           Предыдущая
         </UiButton>
-        <UiButton variant="outline" size="sm" :disabled="table.getCanNextPage()"
-          @click="table.nextPage()">
+        <UiButton variant="outline" size="sm" :disabled="table.getCanNextPage()" @click="table.nextPage()">
           Следующая
         </UiButton>
       </div>

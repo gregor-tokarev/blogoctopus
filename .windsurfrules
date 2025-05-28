@@ -25,6 +25,7 @@
 - use computed values instead of function calls in templates
 - use russian language for user displayable data 
 - use `useState` for states in pages
+- if you are using components from /components/ui folder do not import them use prefix <Ui...
 </frontend>
 
 <design>
