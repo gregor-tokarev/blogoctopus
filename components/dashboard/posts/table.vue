@@ -6,6 +6,7 @@ import { FlexRender, createColumnHelper, getCoreRowModel, getPaginationRowModel,
 import { Checkbox } from "~/components/ui/checkbox";
 import { formatHumanReadableDate } from "~/utils/date";
 import PostActions from "./post-actions.vue";
+import { Pencil, Trash, Calendar } from "lucide-vue-next";
 
 type Post = InferSelectModel<typeof posts>;
 
@@ -157,10 +158,12 @@ const table = useVueTable({
           class="absolute left-0 right-0 top-0 z-10 flex items-center gap-2 h-10 px-4 bg-accent rounded-t-md border-b border-border">
           <span class="text-xs font-medium">Выбрано: {{ getSelectedIds().length }}</span>
           <div class="flex items-center gap-1 ml-auto">
-            <UiButton variant="outline" size="xs" @click="emit('delete', getSelectedIds())">
+            <UiButton variant="outline" size="xs" @click="emit('delete', getSelectedIds())" class="!text-destructive">
+              <Trash class="mr-0.5 h-3.5 w-3.5 text-destructive" />
               Удалить
             </UiButton>
             <UiButton variant="outline" size="xs" @click="emit('reschedule', getSelectedIds())">
+              <Calendar class="mr-0.5 h-3.5 w-3.5" />
               Перепланировать
             </UiButton>
             <UiButton variant="ghost" size="xs" @click="toggleAll(false)">

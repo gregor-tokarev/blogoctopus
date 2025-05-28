@@ -26,16 +26,16 @@ const emit = defineEmits<{
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end">
       <UiDropdownMenuItem @click="emit('edit', post.id)">
-        <Pencil class="mr-2 h-4 w-4" />
+        <Pencil class="mr-0.5 h-4 w-4" />
         <span>Редактировать</span>
       </UiDropdownMenuItem>
       <UiDropdownMenuItem @click="emit('reschedule', post.id)">
-        <Calendar class="mr-2 h-4 w-4" />
+        <Calendar class="mr-0.5 h-4 w-4" />
         <span>Перепланировать</span>
       </UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="emit('delete', post.id)" class="text-destructive">
-        <Trash class="mr-2 h-4 w-4 text-destructive" />
+        <Trash class="mr-0.5 h-4 w-4 text-destructive" />
         <span>Удалить</span>
       </UiDropdownMenuItem>
     </UiDropdownMenuContent>
