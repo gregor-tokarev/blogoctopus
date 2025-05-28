@@ -21,14 +21,14 @@ export default defineEventHandler(async (event) => {
 
   let whereConditions: SQL<unknown> | undefined = eq(
     posts.userId,
-    session.user.id
+    session.user.id,
   );
 
   if (searchTerm) {
     const tsQuery = sql`to_tsquery('russian', ${searchTerm.replace(/ /g, ":&")}) || to_tsquery('english', ${searchTerm.replace(/ /g, ":&")})`;
     whereConditions = and(
       whereConditions,
-      sql`${posts.contentTsv}::tsvector @@ ${tsQuery}`
+      sql`${posts.contentTsv}::tsvector @@ ${tsQuery}`,
     );
   }
 

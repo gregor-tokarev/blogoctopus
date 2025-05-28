@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { Cable, Clock, Newspaper, LogOut, User2, ChevronUp } from "lucide-vue-next";
+import {
+  Cable,
+  Clock,
+  Newspaper,
+  LogOut,
+  User2,
+  ChevronUp,
+} from "lucide-vue-next";
 import { authClient } from "~/lib/auth-client";
 
 // Menu items.

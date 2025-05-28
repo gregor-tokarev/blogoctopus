@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, computed, watchEffect } from 'vue';
+import { reactive, computed, watchEffect } from "vue";
 
 const pagination = reactive({
   page: 1,
@@ -8,7 +8,7 @@ const pagination = reactive({
   totalPages: 0,
 });
 
-const { data, status } = await useFetch('/api/posts', {
+const { data, status } = await useFetch("/api/posts", {
   query: {
     page: pagination.page,
     limit: pagination.limit,
@@ -18,14 +18,14 @@ const { data, status } = await useFetch('/api/posts', {
 
 const posts = computed(() => {
   const rawPosts = data.value?.posts ?? [];
-  return rawPosts.map(post => ({
+  return rawPosts.map((post) => ({
     ...post,
     createdAt: post.createdAt ? new Date(post.createdAt) : null,
     updatedAt: post.updatedAt ? new Date(post.updatedAt) : null,
-    scheduledAt: post.scheduledAt ? new Date(post.scheduledAt) : null
+    scheduledAt: post.scheduledAt ? new Date(post.scheduledAt) : null,
   }));
 });
-const isLoading = computed(() => status.value === 'pending');
+const isLoading = computed(() => status.value === "pending");
 
 watchEffect(() => {
   if (data.value?.pagination) {
@@ -52,7 +52,12 @@ function handlePageChange(page: number) {
       </NuxtLink>
     </div>
 
-    <DashboardPostsTable :data="posts" :is-loading="isLoading" :page-count="pagination.totalPages"
-      :current-page="pagination.page" @page-change="handlePageChange" />
+    <DashboardPostsTable
+      :data="posts"
+      :is-loading="isLoading"
+      :page-count="pagination.totalPages"
+      :current-page="pagination.page"
+      @page-change="handlePageChange"
+    />
   </div>
 </template>

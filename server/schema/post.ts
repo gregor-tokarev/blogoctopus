@@ -4,7 +4,7 @@ import { linkedinIntegrations } from "./linkedin";
 import { telegramIntegrations } from "./telegram";
 
 export const posts = pgTable(
-  "post", 
+  "post",
   {
     id: uuid("id").primaryKey(),
     userId: text("user_id")
@@ -14,15 +14,17 @@ export const posts = pgTable(
     contentTsv: text("content_tsv").notNull().$type<string>(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-    linkedinIntegrationId: text("linkedin_integration_id")
-      .references(() => linkedinIntegrations.id),
-    telegramIntegrationId: text("telegram_integration_id")
-      .references(() => telegramIntegrations.id),
+    linkedinIntegrationId: text("linkedin_integration_id").references(
+      () => linkedinIntegrations.id,
+    ),
+    telegramIntegrationId: text("telegram_integration_id").references(
+      () => telegramIntegrations.id,
+    ),
     scheduledAt: timestamp("scheduled_at"),
   },
   (table) => {
     return {
       contentTsvIdx: index("content_tsv_idx").on(table.contentTsv),
     };
-  }
+  },
 );
