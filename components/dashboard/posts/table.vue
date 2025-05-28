@@ -197,18 +197,37 @@ const table = useVueTable({
         </UiTableBody>
       </UiTable>
     </div>
-
-    <div class="flex items-center justify-between space-x-2 py-4">
-      <div class="text-sm text-muted-foreground">
-      </div>
-      <div class="flex items-center space-x-2">
-        <UiButton variant="outline" size="sm" :disabled="table.getCanPreviousPage()" @click="table.previousPage()">
-          Предыдущая
-        </UiButton>
-        <UiButton variant="outline" size="sm" :disabled="table.getCanNextPage()" @click="table.nextPage()">
-          Следующая
-        </UiButton>
-      </div>
+    
+    <div v-if="props.pageCount > 1" class="flex items-center justify-end space-x-2 py-4">
+      <UiPagination>
+        <UiPaginationContent>
+          <UiPaginationItem>
+            <UiPaginationPrevious 
+              :disabled="table.getCanPreviousPage()" 
+              @click="table.previousPage()"
+            />
+          </UiPaginationItem>
+          
+          <UiPaginationItem v-for="page in props.pageCount" :key="page">
+            <UiButton 
+              variant="outline" 
+              size="icon" 
+              class="h-9 w-9" 
+              :class="{ 'bg-accent': props.currentPage === page }"
+              @click="emit('page-change', page)"
+            >
+              {{ page }}
+            </UiButton>
+          </UiPaginationItem>
+          
+          <UiPaginationItem>
+            <UiPaginationNext 
+              :disabled="table.getCanNextPage()" 
+              @click="table.nextPage()"
+            />
+          </UiPaginationItem>
+        </UiPaginationContent>
+      </UiPagination>
     </div>
   </div>
 </template>
