@@ -20,5 +20,12 @@ export const serverEnv = createEnv({
     LINKEDIN_CLIENT_SECRET: z.string().min(2),
     LINKEDIN_REDIRECT_URI: z.string().url(),
     LINKEDIN_API_VERSION: z.string().optional().default("202402"), // Example version, check LinkedIn docs
+
+    // MinIO S3 Configuration
+    MINIO_ENDPOINT: z.string().min(2),
+    MINIO_ACCESS_KEY: z.string().min(2),
+    MINIO_SECRET_KEY: z.string().min(2),
+    MINIO_BUCKET_NAME: z.string().min(2),
+    MINIO_USE_SSL: z.string().transform((val) => val === "true"),
   },
 });
