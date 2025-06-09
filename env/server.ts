@@ -21,10 +21,11 @@ export const serverEnv = createEnv({
     LINKEDIN_REDIRECT_URI: z.string().url(),
     LINKEDIN_API_VERSION: z.string().optional().default("202402"), // Example version, check LinkedIn docs
 
-    // AWS S3 Configuration
-    AWS_ACCESS_KEY_ID: z.string().min(2),
-    AWS_SECRET_ACCESS_KEY: z.string().min(2),
-    AWS_REGION: z.string().min(2),
-    S3_BUCKET_NAME: z.string().min(2),
+    // MinIO S3 Configuration
+    MINIO_ENDPOINT: z.string().min(2),
+    MINIO_ACCESS_KEY: z.string().min(2),
+    MINIO_SECRET_KEY: z.string().min(2),
+    MINIO_BUCKET_NAME: z.string().min(2),
+    MINIO_USE_SSL: z.string().transform((val) => val === "true"),
   },
 });

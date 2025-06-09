@@ -2,13 +2,15 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { readMultipartFormData } from "h3";
 import { serverEnv } from "~/env/server";
 
-// Initialize S3 client
+// Initialize MinIO S3 client
 const s3Client = new S3Client({
-  region: serverEnv.AWS_REGION,
+  endpoint: `http${serverEnv.MINIO_USE_SSL ? 's' : ''}://${serverEnv.MINIO_ENDPOINT}`,
+  region: "us-east-1", // MinIO doesn't care about region, but AWS SDK requires it
   credentials: {
-    accessKeyId: serverEnv.AWS_ACCESS_KEY_ID,
-    secretAccessKey: serverEnv.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: serverEnv.MINIO_ACCESS_KEY,
+    secretAccessKey: serverEnv.MINIO_SECRET_KEY,
   },
+  forcePathStyle: true, // Required for MinIO
 });
 
 // Allowed image types
@@ -60,9 +62,9 @@ export default defineEventHandler(async (event) => {
     const extension = file.filename.split(".").pop() || "jpg";
     const key = `posts/${timestamp}-${randomString}.${extension}`;
 
-    // Upload to S3
+    // Upload to MinIO
     const command = new PutObjectCommand({
-      Bucket: serverEnv.S3_BUCKET_NAME,
+      Bucket: serverEnv.MINIO_BUCKET_NAME,
       Key: key,
       Body: file.data,
       ContentType: contentType,
@@ -72,8 +74,9 @@ export default defineEventHandler(async (event) => {
 
     await s3Client.send(command);
 
-    // Return the S3 URL
-    const url = `https://${serverEnv.S3_BUCKET_NAME}.s3.${serverEnv.AWS_REGION}.amazonaws.com/${key}`;
+    // Return the MinIO URL
+    const protocol = serverEnv.MINIO_USE_SSL ? "https" : "http";
+    const url = `${protocol}://${serverEnv.MINIO_ENDPOINT}/${serverEnv.MINIO_BUCKET_NAME}/${key}`;
 
     return {
       url,
