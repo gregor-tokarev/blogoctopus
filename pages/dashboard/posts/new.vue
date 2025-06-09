@@ -57,21 +57,50 @@ const handleFileInput = async (event: Event) => {
 
 // Process image file
 const handleImageFile = async (file: File) => {
-  const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const id = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
   const localUrl = URL.createObjectURL(file);
   
   // Add image to preview immediately
   images.value.push({ id, url: localUrl, file });
 
-  // Upload to S3
+  // Upload to S3 with progress tracking
   try {
     isUploading.value = true;
+    uploadProgress.value = 0;
+    
     const formData = new FormData();
     formData.append("image", file);
 
-    const response = await $fetch<{ url: string }>("/api/posts/upload-image", {
-      method: "POST" as const,
-      body: formData,
+    // Use XMLHttpRequest for progress tracking
+    const response = await new Promise<{ url: string }>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          uploadProgress.value = Math.round((event.loaded / event.total) * 100);
+        }
+      });
+      
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          try {
+            const result = JSON.parse(xhr.responseText);
+            resolve(result);
+          } catch (e) {
+            reject(new Error('Invalid response format'));
+          }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      });
+      
+      xhr.addEventListener('error', () => {
+        reject(new Error('Network error during upload'));
+      });
+      
+      xhr.open('POST', '/api/posts/upload-image');
+      xhr.send(formData);
     });
 
     // Update image URL with S3 URL
@@ -90,6 +119,7 @@ const handleImageFile = async (file: File) => {
     alert("Failed to upload image. Please try again.");
   } finally {
     isUploading.value = false;
+    uploadProgress.value = 0;
   }
 };
 
